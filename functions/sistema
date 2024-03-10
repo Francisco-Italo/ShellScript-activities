@@ -1,0 +1,130 @@
+#!/bin/bash
+
+# Name: Francisco Ítalo de Andrade Moraes
+# Email: italomorais181@gmail.com
+#
+# Description: this code simulates a control panel of the machine, providing options of diagnostic commands.
+#
+# Usage:
+# ./sistema
+
+redisplay_menu()
+{
+	REPLY=
+}
+
+check_cmd_status()
+{
+	if [ $? -ne 0 ];
+	then
+		echo -e "\nComando falhou.\n"
+	fi
+}
+
+wait_enter_pressing()
+{
+	key=0
+	
+	echo "Pressione ENTER para voltar ao menu principal."
+	
+	until [ -z "$key" ]
+	do
+		read -n1 key
+	done
+
+	clear 
+}
+
+call_uptime()
+{
+	uptime
+	
+	check_cmd_status
+	wait_enter_pressing
+}
+
+call_dmesg()
+{
+	read -p "Nº de mensagens do kernel: " nmesg
+	sudo dmesg | tail -n $nmesg
+	
+	check_cmd_status
+	wait_enter_pressing
+}
+
+call_vmstat()
+{
+	read -p "Tempo de log: " log_time
+	vmstat 1 $log_time
+
+	check_cmd_status
+	wait_enter_pressing
+}
+
+call_free_mem()
+{
+	free -m
+
+	check_cmd_status
+	wait_enter_pressing
+}
+
+call_mpstat()
+{
+	read -p "Nº de amostras: " nsamples
+	mpstat 1 $nsamples
+	
+	check_cmd_status
+	wait_enter_pressing
+}
+
+call_pidstat()
+{
+	read -p "Nº de amostras: " nsamples
+	pidstat 1 $nsamples
+	
+	check_cmd_status
+	wait_enter_pressing	
+}
+
+call_unknown_opt()
+{
+	echo "Opção inexistente." 
+	wait_enter_pressing
+}
+
+sys_menu()
+{
+	ITEMS=("Tempo ligado"
+	       "Últimas Mensagens do Kernel"
+	       "Uso de memória Virtual"
+	       "Uso de memória física"
+	       "Uso da CPU por núcleo"
+       	       "Uso da CPU por processos"
+	       "Sair")
+	
+	PS3="Escolha uma opção: "
+
+	while true;
+	do
+		select opt in "${ITEMS[@]}"
+		do
+			case $REPLY in
+				1) call_uptime		;;
+				2) call_dmesg 		;;
+				3) call_vmstat 	     	;;
+				4) call_free_mem     	;;
+				5) call_mpstat       	;;
+				6) call_pidstat      	;;
+				7) break 2           	;;
+				*) call_unknown_opt	;;
+			esac
+			redisplay_menu
+		done
+	done
+}
+
+sys_menu
+echo "Fechando o sistema. Tenha um bom dia \\0/"
+sleep 1
+clear

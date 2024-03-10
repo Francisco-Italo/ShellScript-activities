@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# Name: Francisco Ítalo de Andrade Moraes
+# Email: italomorais181@gmail.com
+#
+# Description: this code plays with tput command.
+#
+# Usage: line 12
+
+if [ $# -ne 4 ];
+then
+	printf "Usage:\n./formataTexto <sublinhado/negrito/reverso> <cor_tput> <coord(x),coord(y)> texto\nCódigo de cores do tput:\n1 - vermelho\n2 - verde\n3 - amarelo\n4 - azul\n5 - roxo\n6 - azul claro\n7 - branco\n9 - reset\n"
+	exit 1
+fi
+
+case "$1" in
+	"sublinhado")
+		comm="smul"
+		;;
+	"negrito")
+		comm="bold"
+		;;
+	"reverso")
+		comm="smso"
+		;;
+	*)
+		echo "Parâmetros aceitos: sublinhado, negrito ou reverso."
+		exit 1
+esac
+
+if ! [[ $2 -ge 1 && $2 -le 7 || $2 -eq 9 ]];
+then
+	printf "Código de cores do tput:\n1 - vermelho\n2 - verde\n3 - amarelo\n4 - azul\n5 - roxo\n6 - azul claro\n7 - branco\n9 - reset\n"
+	exit 1
+fi
+
+posy=$(echo "$3" | sed 's/,.*//')
+posx=$(echo "$3" | sed 's/.*,//')
+
+tput $comm
+tput setaf $2
+tput cup $posx $posy
+echo "$4"

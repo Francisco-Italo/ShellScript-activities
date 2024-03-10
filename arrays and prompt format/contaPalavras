@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# Name: Francisco Ítalo de Andrade Moraes
+# Email: italomorais181@gmail.com
+#
+# Description: this code outputs the occurence of each word in a text file.
+#
+# Usage:
+# ./contaPalavras [ TEXT FILE ]
+
+read -p "Informe o arquivo: " file
+
+cat $file 1>/tmp/$file 2>/dev/null
+if [ $? -ne 0  ];
+then
+	echo "Falha na abertura do arquivo. Verifique o nome do arquivo e tente novamente."
+	exit 1
+fi
+
+declare -A arr
+
+for word in $(cat $file);
+do
+	word=${word//\./}
+	arr["$word"]=$((arr["$word"]+1))
+done
+
+for i in ${!arr[@]};
+do
+	echo "$i: ${arr[$i]}" >> ans.txt
+done
+
+sort -n -r -k2,2 ans.txt
+rm ans.txt
